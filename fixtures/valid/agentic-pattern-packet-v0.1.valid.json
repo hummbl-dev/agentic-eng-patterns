@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "0.1.0",
+  "packetStatus": "candidate",
+  "patternManifest": {
+    "id": "react-search-summarize",
+    "title": "ReAct Search and Summarize",
+    "version": "0.1.0",
+    "scope": "A single agent reasons, calls a search tool, and summarizes results in a loop until the goal is met."
+  },
+  "authority": {
+    "posture": "non-canon",
+    "reviewState": "unreviewed"
+  },
+  "patternContract": {
+    "patternType": "react",
+    "agentTopology": {
+      "agents": [
+        {
+          "name": "solo",
+          "role": "Reason about the goal, call search, and summarize."
+        }
+      ]
+    },
+    "toolSpecs": [
+      {
+        "name": "search",
+        "inputContract": { "query": "string" },
+        "outputContract": { "snippets": "array<string>" }
+      }
+    ],
+    "memorySpecs": {
+      "shortTerm": true
+    },
+    "errorRecoveryPolicy": {
+      "strategy": "retry",
+      "maxRetries": 1
+    },
+    "humanInTheLoopPolicy": {
+      "required": false
+    }
+  },
+  "receiptRequirements": {
+    "receiptPath": "receipts/agentic-eng-patterns-v0.1-packet-receipt.md",
+    "provenance": "public"
+  }
+}

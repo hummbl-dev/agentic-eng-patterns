@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "0.1.0",
+  "packetStatus": "candidate",
+  "patternManifest": {
+    "id": "missing-contract",
+    "title": "Invalid Packet Missing patternContract",
+    "version": "0.1.0",
+    "scope": "Intentionally invalid: omits the required patternContract object."
+  },
+  "authority": {
+    "posture": "non-canon",
+    "reviewState": "unreviewed"
+  },
+  "receiptRequirements": {
+    "receiptPath": "receipts/agentic-eng-patterns-v0.1-packet-receipt.md",
+    "provenance": "public"
+  }
+}

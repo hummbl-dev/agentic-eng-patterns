@@ -1,0 +1,256 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/hummbl-dev/agentic-eng-patterns/schemas/agentic-eng-patterns-v0.1.json",
+  "title": "Agentic Engineering Patterns Packet v0.1",
+  "description": "Minimal, reviewable schema for an agentic engineering patterns packet. Candidate namespace only; not a standard.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "packetStatus",
+    "patternManifest",
+    "authority",
+    "patternContract",
+    "receiptRequirements"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "0.1.0",
+      "description": "Semver-ish version of the packet schema this instance conforms to."
+    },
+    "packetStatus": {
+      "type": "string",
+      "enum": ["candidate", "reviewed", "adopted", "deprecated"],
+      "description": "Lifecycle status of the packet. v0.1 packets should be 'candidate'."
+    },
+    "patternManifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "version", "scope"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+          "description": "Stable, lowercase, kebab-case identifier for the pattern."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "description": "Human-readable pattern title."
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+          "description": "Semver version of this pattern instance."
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 280,
+          "description": "One-line description of what the pattern covers."
+        }
+      }
+    },
+    "authority": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["posture", "reviewState"],
+      "properties": {
+        "posture": {
+          "type": "string",
+          "enum": ["non-canon", "candidate-canon"],
+          "description": "Whether this pattern claims canon status. v0.1 should be 'non-canon'."
+        },
+        "reviewState": {
+          "type": "string",
+          "enum": ["unreviewed", "in-review", "reviewed"],
+          "description": "Current review state of the packet."
+        },
+        "reviewers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Optional list of reviewer handles or identities."
+        }
+      }
+    },
+    "patternContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "patternType",
+        "agentTopology",
+        "toolSpecs",
+        "memorySpecs",
+        "errorRecoveryPolicy",
+        "humanInTheLoopPolicy"
+      ],
+      "properties": {
+        "patternType": {
+          "type": "string",
+          "enum": ["react", "plan-and-execute", "reflexion", "multi-agent-handoff", "orchestration"],
+          "description": "The planning/execution pattern this packet describes."
+        },
+        "agentTopology": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["agents"],
+          "properties": {
+            "agents": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["name", "role"],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "role": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 280
+                  },
+                  "delegatesTo": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "description": "Names of agents this agent may delegate or hand off to."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "toolSpecs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "inputContract", "outputContract"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "description": {
+                "type": "string",
+                "maxLength": 280
+              },
+              "inputContract": {
+                "type": "object",
+                "description": "Descriptive input contract; no enforced sub-schema in v0.1."
+              },
+              "outputContract": {
+                "type": "object",
+                "description": "Descriptive output contract; no enforced sub-schema in v0.1."
+              }
+            }
+          }
+        },
+        "memorySpecs": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "shortTerm": {
+              "type": "boolean",
+              "default": false
+            },
+            "longTerm": {
+              "type": "boolean",
+              "default": false
+            },
+            "episodic": {
+              "type": "boolean",
+              "default": false
+            },
+            "description": {
+              "type": "string",
+              "maxLength": 280
+            }
+          }
+        },
+        "errorRecoveryPolicy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["strategy"],
+          "properties": {
+            "strategy": {
+              "type": "string",
+              "enum": ["retry", "fallback", "escalate", "abort", "human-escalation"],
+              "description": "High-level error recovery strategy."
+            },
+            "maxRetries": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10
+            },
+            "description": {
+              "type": "string",
+              "maxLength": 280
+            }
+          }
+        },
+        "humanInTheLoopPolicy": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["required"],
+          "properties": {
+            "required": {
+              "type": "boolean",
+              "description": "Whether a human checkpoint is required in the loop."
+            },
+            "checkpoints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "description": "Named points in the loop where a human may intervene."
+            },
+            "description": {
+              "type": "string",
+              "maxLength": 280
+            }
+          }
+        }
+      }
+    },
+    "receiptRequirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["receiptPath", "provenance"],
+      "properties": {
+        "receiptPath": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Repository-relative path to the receipt documenting this packet."
+        },
+        "provenance": {
+          "type": "string",
+          "enum": ["public", "derivative", "audited"],
+          "description": "Provenance marker. v0.1 should be 'public' or 'derivative'."
+        },
+        "closesIssues": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "description": "Issue numbers this packet is intended to close."
+        }
+      }
+    }
+  }
+}
