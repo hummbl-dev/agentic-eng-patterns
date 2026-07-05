@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "0.1.0",
+  "packetStatus": "candidate",
+  "patternManifest": {
+    "id": "plan-execute-with-handoff",
+    "title": "Plan-and-Execute with Human Handoff",
+    "version": "0.1.0",
+    "scope": "A planner agent produces a step plan, an executor agent runs each step with tools, and a human reviews before completion."
+  },
+  "authority": {
+    "posture": "non-canon",
+    "reviewState": "unreviewed",
+    "reviewers": []
+  },
+  "patternContract": {
+    "patternType": "plan-and-execute",
+    "agentTopology": {
+      "agents": [
+        {
+          "name": "planner",
+          "role": "Decompose the goal into an ordered, reviewable step plan.",
+          "delegatesTo": ["executor"]
+        },
+        {
+          "name": "executor",
+          "role": "Execute a single step using approved tools and report results.",
+          "delegatesTo": []
+        }
+      ]
+    },
+    "toolSpecs": [
+      {
+        "name": "search",
+        "description": "Retrieve documents relevant to a query.",
+        "inputContract": {
+          "query": "string",
+          "topK": "integer"
+        },
+        "outputContract": {
+          "documents": "array<{id: string, snippet: string}>"
+        }
+      },
+      {
+        "name": "writeDraft",
+        "description": "Persist a draft artifact for human review.",
+        "inputContract": {
+          "content": "string",
+          "format": "string"
+        },
+        "outputContract": {
+          "draftId": "string",
+          "status": "string"
+        }
+      }
+    ],
+    "memorySpecs": {
+      "shortTerm": true,
+      "longTerm": false,
+      "episodic": false,
+      "description": "Step results are kept in short-term memory for the duration of the run."
+    },
+    "errorRecoveryPolicy": {
+      "strategy": "retry",
+      "maxRetries": 2,
+      "description": "Retry failed tool calls up to twice, then escalate to the human checkpoint."
+    },
+    "humanInTheLoopPolicy": {
+      "required": true,
+      "checkpoints": ["plan-review", "draft-review"],
+      "description": "A human reviews the plan before execution and reviews the draft before completion."
+    }
+  },
+  "receiptRequirements": {
+    "receiptPath": "receipts/agentic-eng-patterns-v0.1-packet-receipt.md",
+    "provenance": "public",
+    "closesIssues": [1, 2, 3]
+  }
+}
