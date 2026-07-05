@@ -1,6 +1,6 @@
 # Agentic Engineering Patterns
 
-$(System.Collections.Hashtable.Name) is a public seed repository for agentic engineering patterns.
+Agentic Engineering Patterns is a public seed repository for agentic engineering patterns.
 
 ## Purpose
 
